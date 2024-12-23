@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import userRouter from './routes/userRoutes.js'
 import connectDB from './config/connectdb.js'
 import passport from 'passport'
+import './config/passport-jwt.js'
 const app=express()
 const port=process.env.PORT
 const DATABASE_URL=process.env.DATABASE_URL
