@@ -4,7 +4,9 @@ import { useFormik } from 'formik';
 import { loginSchema } from "@/validation/schemas";
 import { useRouter } from 'next/navigation'
 import { useState } from "react";
-// import { useLoginUserMutation } from "@/lib/services/auth";
+import { useLoginUserMutation } from "@/lib/services/auth";
+import dotenv from 'dotenv'
+dotenv.config();
 
 const initialValues = {
   email: "",
@@ -15,35 +17,36 @@ const Login = () => {
   const [serverSuccessMessage, setServerSuccessMessage] = useState('')
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-//   const [loginUser] = useLoginUserMutation()
+  const [loginUser] = useLoginUserMutation()
   const { values, errors, handleChange, handleSubmit } = useFormik({
     initialValues,
     validationSchema: loginSchema,
     onSubmit: async (values, action) => {
       setLoading(true);
-    //   try {
-    //     const response = await loginUser(values)
-    //     if (response.data && response.data.status === "success") {
-    //       setServerSuccessMessage(response.data.message)
-    //       setServerErrorMessage('')
-    //       action.resetForm()
-    //       setLoading(false);
-    //       router.push('/user/profile')
-    //     }
-    //     if (response.error && response.error.data.status === "failed") {
-    //       setServerErrorMessage(response.error.data.message)
-    //       setServerSuccessMessage('')
-    //       setLoading(false);
-    //     }
-    //   } catch (error) {
-    //     // console.log(error);
-    //     setLoading(false);
-    //   }
+      try {
+        const response = await loginUser(values)
+        if (response.data && response.data.status === "success") {
+          setServerSuccessMessage(response.data.message)
+          setServerErrorMessage('')
+          action.resetForm()
+          setLoading(false);
+          router.push('/user/profile')
+        }
+        if (response.error && 'data' in response.error && (response.error.data as any).status === 'failed') {
+          setServerErrorMessage((response.error.data as { message: string }).message);
+          setServerSuccessMessage('')
+          setLoading(false);
+        }
+      } catch (error) {
+        // console.log(error);
+        setLoading(false);
+      }
     }
   })
   const handleGoogleLogin = async () => {
+    const baseUrl = process.env.AUTH_API_URL || "http://localhost:8000";
     window.open(
-      `http://localhost:8000/auth/google`,
+      `${baseUrl}/auth/google`,
       "_self"
     );
   }

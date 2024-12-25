@@ -10,15 +10,18 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
+    "dotenv": "^16.4.7",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "next": "15.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-redux": "^9.2.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

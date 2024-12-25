@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import { verifyEmailSchema } from '@/validation/schemas';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { useVerifyEmailMutation } from "@/lib/services/auth";
+import { useVerifyEmailMutation } from "@/lib/services/auth";
 
 const initialValues = {
   email: "",
@@ -16,30 +16,30 @@ const verifyEmail = () => {
   const [serverSuccessMessage, setServerSuccessMessage] = useState('')
   const [loading, setLoading] = useState(false);
   const router = useRouter()
-//   const [verifyEmail] = useVerifyEmailMutation()
+  const [verifyEmail] = useVerifyEmailMutation()
   const { values, errors, handleChange, handleSubmit } = useFormik({
     initialValues,
     validationSchema: verifyEmailSchema,
     onSubmit: async (values, action) => {
-    //   setLoading(true);
-    //   try {
-    //     const response = await verifyEmail(values)
-    //     if (response.data && response.data.status === "success") {
-    //       setServerSuccessMessage(response.data.message)
-    //       setServerErrorMessage('')
-    //       action.resetForm()
-    //       setLoading(false);
-    //       router.push('/account/login')
-    //     }
-    //     if (response.error && response.error.data.status === "failed") {
-    //       setServerErrorMessage(response.error.data.message)
-    //       setServerSuccessMessage('')
-    //       setLoading(false);
-    //     }
-    //   } catch (error) {
-    //     console.log(error);
-    //     setLoading(false);
-    //   }
+      setLoading(true);
+      try {
+        const response = await verifyEmail(values)
+        if (response.data && response.data.status === "success") {
+          setServerSuccessMessage(response.data.message)
+          setServerErrorMessage('')
+          action.resetForm()
+          setLoading(false);
+          router.push('/account/login')
+        }
+        if (response.error && 'data' in response.error && (response.error.data as any).status === 'failed') {
+          setServerErrorMessage((response.error.data as { message: string }).message);
+          setServerSuccessMessage('')
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
     }
   })
 

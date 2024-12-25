@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useFormik } from 'formik';
 import { resetPasswordLinkSchema } from "@/validation/schemas";
-// import { useResetPasswordLinkMutation } from "@/lib/services/auth";
+import { useResetPasswordLinkMutation } from "@/lib/services/auth";
 import { useState } from "react";
 const initialValues = {
   email: "",
@@ -11,29 +11,29 @@ const ResetPasswordLink = () => {
   const [serverErrorMessage, setServerErrorMessage] = useState('')
   const [serverSuccessMessage, setServerSuccessMessage] = useState('')
   const [loading, setLoading] = useState(false);
-//   const [resetPasswordLink] = useResetPasswordLinkMutation()
+  const [resetPasswordLink] = useResetPasswordLinkMutation()
   const { values, errors, handleChange, handleSubmit } = useFormik({
     initialValues,
     validationSchema: resetPasswordLinkSchema,
     onSubmit: async (values, action) => {
       setLoading(true);
-    //   try {
-    //     const response = await resetPasswordLink(values)
-    //     if (response.data && response.data.status === "success") {
-    //       setServerSuccessMessage(response.data.message)
-    //       setServerErrorMessage('')
-    //       action.resetForm()
-    //       setLoading(false);
-    //     }
-    //     if (response.error && response.error.data.status === "failed") {
-    //       setServerErrorMessage(response.error.data.message)
-    //       setServerSuccessMessage('')
-    //       setLoading(false);
-    //     }
-    //   } catch (error) {
-    //     // console.log(error);
-    //     setLoading(false);
-    //   }
+      try {
+        const response = await resetPasswordLink(values)
+        if (response.data && response.data.status === "success") {
+          setServerSuccessMessage(response.data.message)
+          setServerErrorMessage('')
+          action.resetForm()
+          setLoading(false);
+        }
+       if (response.error && 'data' in response.error && (response.error.data as any).status === 'failed') {
+          setServerErrorMessage((response.error.data as { message: string }).message);
+          setServerSuccessMessage('')
+          setLoading(false);
+        }
+      } catch (error) {
+        // console.log(error);
+        setLoading(false);
+      }
     }
   })
   return (

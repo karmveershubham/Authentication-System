@@ -7,6 +7,8 @@ import userRouter from './routes/userRoutes.js'
 import connectDB from './config/connectdb.js'
 import passport from 'passport'
 import './config/passport-jwt.js'
+import './config/google-strategy.js'
+import setTokensCookies from './utils/setTokenCookies.js'
 const app=express()
 const port=process.env.PORT
 const DATABASE_URL=process.env.DATABASE_URL
@@ -36,8 +38,23 @@ app.use(cookieParser())
 
 app.use('/api/user/', userRouter);
 
-app.listen(port, ()=>{
-    console.log(`server is running on port ${port}`)
-})
+// Google Auth Routes
+app.get('/auth/google',
+  passport.authenticate('google', { session: false, scope: ['profile', 'email'] }));
 
+app.get('/auth/google/callback',
+  passport.authenticate('google', { session: false, failureRedirect: `${process.env.FRONTEND_HOST}/account/login` }),
+  (req, res) => {
+
+    // Access user object and tokens from req.user
+    const { user, accessToken, refreshToken, accessTokenExp, refreshTokenExp } = req.user;
+    setTokensCookies(res, accessToken, refreshToken, accessTokenExp, refreshTokenExp)
+
+    // Successful authentication, redirect home.
+    res.redirect(`${process.env.FRONTEND_HOST}/user/profile`);
+  });
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`)
+})
 

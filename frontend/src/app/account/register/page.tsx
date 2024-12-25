@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { useFormik } from 'formik';
 import { registerSchema } from '@/validation/schemas'
-// import { useCreateUserMutation } from "@/lib/services/auth";
+import { useCreateUserMutation } from "@/lib/services/auth";
 import { useRouter } from 'next/navigation'
+import dotenv from 'dotenv'
+dotenv.config();
 
 const initialValues = {
   name: "",
@@ -18,37 +20,38 @@ const Register = () => {
   const [serverSuccessMessage, setServerSuccessMessage] = useState('')
   const [loading, setLoading] = useState(false);
   const router = useRouter()
-  // const [createUser] = useCreateUserMutation()
+  const [createUser] = useCreateUserMutation() 
   const { values, errors, handleChange, handleSubmit } = useFormik({
     initialValues,
     validationSchema: registerSchema,
     onSubmit: async (values, action) => {
       setLoading(true);
-      // try {
-      //   // console.log(values);
-      //   const response = await createUser(values)
-      //   // console.log(response);
-      //   if (response.data && response.data.status === "success") {
-      //     setServerSuccessMessage(response.data.message)
-      //     setServerErrorMessage('')
-      //     action.resetForm()
-      //     setLoading(false);
-      //     router.push('/account/verify-email')
-      //   }
-      //   if (response.error && response.error.data.status === "failed") {
-      //     setServerErrorMessage(response.error.data.message)
-      //     setServerSuccessMessage('')
-      //     setLoading(false);
-      //   }
-      // } catch (error) {
-      //   // console.log(error);
-      //   setLoading(false);
-      // }
+      try {
+        // console.log(values);
+        const response = await createUser(values)
+        // console.log(response);
+        if (response.data && response.data.status === "success") {
+          setServerSuccessMessage(response.data.message)
+          setServerErrorMessage('')
+          action.resetForm()
+          setLoading(false);
+          router.push('/account/verify-email')
+        }
+        if (response.error && 'data' in response.error && (response.error.data as any).status === 'failed') {
+          setServerErrorMessage((response.error.data as { message: string }).message);
+          setServerSuccessMessage('')
+          setLoading(false);
+        }
+      } catch (error) {
+        // console.log(error);
+        setLoading(false);
+      }
     }
   })
   const handleGoogleLogin = async () => {
+    const baseUrl = process.env.AUTH_API_URL || "http://localhost:8000";
     window.open(
-      `http://localhost:8000/auth/google`,
+      `${baseUrl}/auth/google`,
       "_self"
     );
   }

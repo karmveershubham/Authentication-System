@@ -5,6 +5,7 @@ import sendEmailVerificationOTP from '../utils/sendEmailOTP.js';
 import generateTokens from '../utils/generatetokens.js';
 import setTokensCookies from '../utils/setTokenCookies.js';
 import refreshAccessToken from '../utils/refreshAcessToken.js';
+import UserRefreshTokenModel from '../models/UserRefreshToken.js';
 import jwt from 'jsonwebtoken';
 import transporter from '../config/emailConfig.js';
 class UserController {
